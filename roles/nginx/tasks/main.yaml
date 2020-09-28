@@ -1,0 +1,64 @@
+---
+
+  - name: Copy rpms
+    copy:
+      src: ../rpm/
+      dest: /tmp/nginx_rpm/
+
+  - name: Install nginx
+    shell: rpm -ivh --force  *.rpm
+    args:
+      chdir: /tmp/nginx_rpm/
+    become: yes
+
+  - name: Configure nginx with SSL
+    copy:
+      src: ../files/nginx.conf
+      dest: /etc/nginx/nginx.conf
+      owner: root
+      group: root
+
+  - name: Configure nginx site with SSL
+    copy:
+      src: ../files/site.conf
+      dest: /etc/nginx/default.d/site.conf
+      owner: root
+      group: root
+
+  - name: Configure nginx .cer with SSL
+    copy:
+      src: ../files/ssl/
+      dest: /etc/nginx/ssl/
+      owner: root
+      group: root
+
+
+  - name: Restart and Enable nginx service
+    service:
+      name: nginx
+      state: reloaded
+      enabled: yes
+
+  - name: Disable SELINUX
+    selinux:
+      state: disabled
+
+  - name: Configure firewalld
+    firewalld:
+      service: https
+      permanent: true
+      state: enabled
+
+  - name: Configure firewalld
+    firewalld:
+      service: http
+      permanent: true
+      state: disabled
+
+  - name: Restart firewalld service
+    service:
+      name: firewalld
+      state: reloaded
+      enabled: yes
+
+...

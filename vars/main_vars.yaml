@@ -1,0 +1,5 @@
+---
+
+nginx_rpm: "/tmp/nginx_rpm/nginx-1.16.1-1.el7.x86_64.rpm"
+
+...
